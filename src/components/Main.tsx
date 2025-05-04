@@ -1,94 +1,54 @@
 import { useMemo } from "react";
-import { tipOptions } from "../data/tipOptions";
-import { MenuItem } from "../types";
 import { usePropina } from "../stores/propinaStore";
+import Menu from "./Menu";
+import Propina from "./Propina";
+import Totales from "./Totales";
+import { Transition, TransitionChild } from "@headlessui/react";
 
 export default function Main() {
 
-  const { menuItems, consumoItems, tip, addConsumoItem, deleteItem, saveOrden, setTip } = usePropina()
+  const { consumoItems, tip, deleteItem, saveOrden } = usePropina()
 
   const consumoLength = useMemo(() => consumoItems.length > 0, [consumoItems])
 
-  const subTotal = useMemo(
-    () => consumoItems.reduce((total, item) => total + (item.price * item.quantity), 0), [consumoItems]
-  )
-  const propina = useMemo(() => subTotal * tip, [consumoItems, tip])
-  const totalPago = useMemo(() => subTotal + propina, [consumoItems, tip])
-
-  const formatCurrency = (quantity: MenuItem['price']) => {
-    return new Intl.NumberFormat('en-US', {
-      style: "currency",
-      currency: 'USD'
-    }).format(quantity)
-  }
 
   return (
     <main>
       <div className="container mx-auto grid grid-cols-2 gap-x-5 max-md:grid-cols-1 px-2 my-8">
-        <div>
 
-          <h2 className="text-3xl font-bold text-center py-8">Menú</h2>
+        <Menu />
 
-          {menuItems.map(plato => (
+        <div className="border-2 border-dashed rounded-md border-gray-300 px-5 relative min-h-30">
 
-            <button
-              className="flex justify-between border-3 border-teal-400 p-3 rounded-md cursor-pointer hover:bg-teal-200 transition-colors shadow mb-4 max-[420px]:flex-col w-full"
-              key={plato.id}
-              onClick={() => addConsumoItem(plato)}
-            >
-              <p className="text-xl">{plato.name}</p>
+          <Transition show={!consumoLength}>
+            <p className="text-xl font-extralight right-[40%] py-8 transition duration-100 ease-in-out data-closed:opacity-0 absolute">La ordén está vacia</p>
+          </Transition>
 
-              <p className="text-xl font-bold">${plato.price}</p>
-            </button>
-          ))}
-        </div>
-
-        <div className="border-2 border-dashed rounded-md border-gray-300 px-5">
-
-          {consumoLength ? (
-            <>
+          <Transition show={consumoLength}>
+            <div className="transition duration-150 ease-in-out data-closed:opacity-0 data-enter:opacity-100">
               <h2 className="text-3xl font-bold text-center py-8">Consumo</h2>
               <div>
                 {consumoItems.map(item => (
-                  <div key={item.id} className="flex items-end justify-between py-5 border-b border-gray-300">
-                    <div>
-                      <p className="text-xl">{item.name} - ${item.price}</p>
-                      <p className="font-bold text-[18px]">Cantidad: {item.quantity} - ${item.quantity * item.price}</p>
+                  <TransitionChild unmount key={item.id}>
+                    <div className="flex items-end justify-between py-5 border-b border-gray-300 transition ease-in-out data-closed:duration-200  data-closed:translate-x-full data-leave:duration-200  data-leave:translate-x-full">
+                      <div>
+                        <p className="text-xl">{item.name} - ${item.price}</p>
+                        <p className="font-bold text-[18px]">Cantidad: {item.quantity} - ${item.quantity * item.price}</p>
+                      </div>
+                      <button
+                        className="size-8 rounded-full bg-red-500 font-bold text-white cursor-pointer"
+                        onClick={() => deleteItem(item.id)}
+                      >
+                        X
+                      </button>
                     </div>
-                    <button
-                      className="size-8 rounded-full bg-red-500 font-bold text-white cursor-pointer"
-                      onClick={() => deleteItem(item.id)}
-                    >
-                      X
-                    </button>
-                  </div>
+                  </TransitionChild>
                 ))}
               </div>
 
-              <div>
-                <h3 className="text-2xl font-bold pt-8 pb-2">Propina:</h3>
-                <form className="*:text-[18px] flex flex-col">
-                  {tipOptions.map(tip => (
-                    <div key={tip.id}>
-                      <label htmlFor={tip.id}>{tip.label} </label>
-                      <input
-                        type="radio"
-                        name="tip"
-                        id={tip.id}
-                        value={tip.value}
-                        onChange={setTip}
-                      />
-                    </div>
-                  ))}
-                </form>
-              </div>
+              <Propina />
 
-              <div>
-                <h3 className="text-2xl font-bold pt-8">Totales y Propina:</h3>
-                <p className="text-[18px] py-1">Subtotal a pagar: {formatCurrency(subTotal)} </p>
-                <p className="text-[18px] py-1">Propina: {formatCurrency(propina)}</p>
-                <p className="text-[18px] py-1">Total a pagar: {formatCurrency(totalPago)}</p>
-              </div>
+              <Totales />
 
               <button
                 className="w-full text-center uppercase font-bold text-white bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-md p-4 text-xl mt-8 disabled:opacity-20 disabled:bg-neutral-800 disabled:cursor-auto"
@@ -97,10 +57,8 @@ export default function Main() {
               >
                 Guardar Orden
               </button>
-            </>
-          ) : (
-            <p className="text-xl font-extralight text-center py-8">La ordén está vacia</p>
-          )}
+            </div>
+          </Transition>
 
         </div>
       </div>
