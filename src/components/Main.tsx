@@ -12,8 +12,8 @@ export default function Main() {
 
   const consumoLength = useMemo(() => consumoItems.length > 0, [consumoItems])
 
-  const subTotal = useMemo(
-    () => consumoItems.reduce((total, item) => total + (item.price * item.quantity), 0), [consumoItems]
+  const subTotal = useMemo<number>(
+    () => consumoItems.reduce((total: number, item: MenuItem) => total + (item.price * item.quantity), 0), [consumoItems]
   )
   const propina = useMemo(() => subTotal * tip, [consumoItems, tip])
   const totalPago = useMemo(() => subTotal + propina, [consumoItems, tip])
