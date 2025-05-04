@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { tipOptions } from "../data/tipOptions";
-import { MenuItem } from "../types";
+import { ConsumoItem, MenuItem } from "../types";
 import { usePropina } from "../stores/propinaStore";
 import { Collapse, IconButton, List, ListItem } from "@mui/material";
 import { TransitionGroup } from "react-transition-group";
@@ -13,7 +13,7 @@ export default function Main() {
   const consumoLength = useMemo(() => consumoItems.length > 0, [consumoItems])
 
   const subTotal = useMemo<number>(
-    () => consumoItems.reduce((total: number, item: MenuItem) => total + (item.price * item.quantity), 0), [consumoItems]
+    () => consumoItems.reduce((total: number, item: ConsumoItem) => total + (item.price * item.quantity), 0), [consumoItems]
   )
   const propina = useMemo(() => subTotal * tip, [consumoItems, tip])
   const totalPago = useMemo(() => subTotal + propina, [consumoItems, tip])
