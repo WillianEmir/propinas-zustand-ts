@@ -24,7 +24,7 @@ export const usePropina = create<PropinaState>()(persist((set, get) => ({
     
     if(exists){
       newConsumoItens = get().consumoItems.map(
-        item => item.id === plato.id ? { ...item, show: true, quantity: item.quantity + 1 } : item
+        item => item.id === plato.id ? { ...item, quantity: item.quantity + 1 } : item
       )
     } else {
       const newItem: ConsumoItem = { ...plato, quantity: 1 }
