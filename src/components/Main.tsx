@@ -2,6 +2,9 @@ import { useMemo } from "react";
 import { tipOptions } from "../data/tipOptions";
 import { MenuItem } from "../types";
 import { usePropina } from "../stores/propinaStore";
+import { Collapse, IconButton, List, ListItem } from "@mui/material";
+import { TransitionGroup } from "react-transition-group";
+import { Delete } from "@mui/icons-material";
 
 export default function Main() {
 
@@ -37,7 +40,6 @@ export default function Main() {
               onClick={() => addConsumoItem(plato)}
             >
               <p className="text-xl">{plato.name}</p>
-
               <p className="text-xl font-bold">${plato.price}</p>
             </button>
           ))}
@@ -48,21 +50,35 @@ export default function Main() {
           {consumoLength ? (
             <>
               <h2 className="text-3xl font-bold text-center py-8">Consumo</h2>
+
+              <List>
+                <TransitionGroup>
+                  {consumoItems.map(item => (
+                    <Collapse key={item.id}>
+                      <ListItem
+                        secondaryAction={
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            title="Delete"
+                            onClick={() => deleteItem(item.id)}
+                          >
+                            <Delete sx={{color: 'red'}} />
+                          </IconButton>
+                        }
+                      >
+                        <div>
+                          <p className="text-xl">{item.name} - ${item.price}</p>
+                          <p className="font-bold text-[18px]">Cantidad: {item.quantity} - ${item.quantity * item.price}</p>
+                        </div>
+                      </ListItem>
+                    </Collapse>
+                  ))}
+                </TransitionGroup>
+              </List>
+
               <div>
-                {consumoItems.map(item => (
-                  <div key={item.id} className="flex items-end justify-between py-5 border-b border-gray-300">
-                    <div>
-                      <p className="text-xl">{item.name} - ${item.price}</p>
-                      <p className="font-bold text-[18px]">Cantidad: {item.quantity} - ${item.quantity * item.price}</p>
-                    </div>
-                    <button
-                      className="size-8 rounded-full bg-red-500 font-bold text-white cursor-pointer"
-                      onClick={() => deleteItem(item.id)}
-                    >
-                      X
-                    </button>
-                  </div>
-                ))}
+
               </div>
 
               <div>
