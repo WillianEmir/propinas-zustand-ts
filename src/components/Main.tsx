@@ -1,72 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
-import { menuItems } from "../data/db";
+import { useMemo } from "react";
 import { tipOptions } from "../data/tipOptions";
 import { MenuItem } from "../types";
-import { ConsumoItem } from "../types";
+import { usePropina } from "../stores/propinaStore";
 
 export default function Main() {
 
-  const initalConsumo = () : ConsumoItem[] => {
-    const storageConsumo = localStorage.getItem('consumoItems')
-    return storageConsumo?.length ? JSON.parse(storageConsumo) : []
-  }
-
-  const initialTip = () : number => {
-    const storagePropina = localStorage.getItem('tip');
-    return storagePropina?.length ? JSON.parse(storagePropina) : 0
-  }
-
-  const [consumoItems, setConsumoItems] = useState<ConsumoItem[]>(initalConsumo);
-  const [tip, setTip] = useState(initialTip);
-
-  useEffect(() => {
-    localStorage.setItem('consumoItems', JSON.stringify(consumoItems))
-    localStorage.setItem('tip', JSON.stringify(tip))
-  }, [consumoItems, tip])
-
-  useEffect(() => {!consumoLength ? setTip(0) : ''}, [consumoItems]);
-
-  const addConsumoItem = (plato: MenuItem) => {
-    const existe = consumoItems.some(item => item.id === plato.id)
-
-    if (existe) {
-      setConsumoItems(consumoItems.map(
-        item => item.id === plato.id ? { ...item, quantity: item.quantity + 1 } : item
-      ))
-    } else {
-      const newItem: ConsumoItem = { ...plato, quantity: 1 }
-      setConsumoItems([...consumoItems, newItem])
-    }
-  }
+  const { menuItems, consumoItems, tip, addConsumoItem, deleteItem, saveOrden, setTip } = usePropina()
 
   const consumoLength = useMemo(() => consumoItems.length > 0, [consumoItems])
 
-  const deleteItem = (id: MenuItem['id']) => {
-    if(consumoLength === false) {
-      setTip(0)
-    }
-    setConsumoItems(consumoItems.filter(item => item.id !== id))
-  }
-
   const subTotal = useMemo(
-    () => consumoItems.reduce(
-      (total, item) => total + (item.price * item.quantity), 0), [consumoItems]
+    () => consumoItems.reduce((total, item) => total + (item.price * item.quantity), 0), [consumoItems]
   )
-
   const propina = useMemo(() => subTotal * tip, [consumoItems, tip])
-  
   const totalPago = useMemo(() => subTotal + propina, [consumoItems, tip])
-  
-  const formatCurrency = (quantity : MenuItem['price']) => {
+
+  const formatCurrency = (quantity: MenuItem['price']) => {
     return new Intl.NumberFormat('en-US', {
       style: "currency",
       currency: 'USD'
     }).format(quantity)
-  }
-
-  const saveOrden = () => {
-    setConsumoItems([])
-    setTip(0)
   }
 
   return (
@@ -123,7 +76,7 @@ export default function Main() {
                         name="tip"
                         id={tip.id}
                         value={tip.value}
-                        onChange={e => setTip(+e.target.value)}
+                        onChange={setTip}
                       />
                     </div>
                   ))}
@@ -137,9 +90,10 @@ export default function Main() {
                 <p className="text-[18px] py-1">Total a pagar: {formatCurrency(totalPago)}</p>
               </div>
 
-              <button 
-                className="w-full text-center uppercase font-bold text-white bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-md p-4 text-xl mt-8"
+              <button
+                className="w-full text-center uppercase font-bold text-white bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-md p-4 text-xl mt-8 disabled:opacity-20 disabled:bg-neutral-800 disabled:cursor-auto"
                 onClick={saveOrden}
+                disabled={tip === 0}
               >
                 Guardar Orden
               </button>

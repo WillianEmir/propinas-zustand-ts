@@ -1,15 +1,6 @@
-export type MenuItem = {
-  id: number;
-  name: string;
-  price: number;
-}
+import { z } from "zod";
+import { MenuItemSchema, ConsumoItemSchema, PropinaSchema } from "../schemas";
 
-export type ConsumoItem = MenuItem & {
-  quantity: number
-}
-
-export type Tip = {
-  id: string;
-  value: number;
-  label: string
-}
+export type MenuItem = z.infer<typeof MenuItemSchema>
+export type ConsumoItem = z.infer<typeof ConsumoItemSchema>
+export type Tip = z.infer<typeof PropinaSchema>
