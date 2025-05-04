@@ -1,5 +1,8 @@
 import { useMemo } from "react";
 import { usePropina } from "../stores/propinaStore";
+import { Collapse, IconButton, List, ListItem } from "@mui/material";
+import { TransitionGroup } from "react-transition-group";
+import { Delete } from "@mui/icons-material";
 import Menu from "./Menu";
 import Propina from "./Propina";
 import Totales from "./Totales";
@@ -15,34 +18,43 @@ export default function Main() {
   return (
     <main>
       <div className="container mx-auto grid grid-cols-2 gap-x-5 max-md:grid-cols-1 px-2 my-8">
+        <div>
 
-        <Menu />
+          <h2 className="text-3xl font-bold text-center py-8">Menú</h2>
 
-        <div className="border-2 border-dashed rounded-md border-gray-300 px-5 relative min-h-30">
+          {menuItems.map(plato => (
 
-          <Transition show={!consumoLength}>
-            <p className="text-xl font-extralight right-[40%] py-8 transition duration-100 ease-in-out data-closed:opacity-0 absolute">La ordén está vacia</p>
-          </Transition>
+            <button
+              className="flex justify-between border-3 border-teal-400 p-3 rounded-md cursor-pointer hover:bg-teal-200 transition-colors shadow mb-4 max-[420px]:flex-col w-full"
+              key={plato.id}
+              onClick={() => addConsumoItem(plato)}
+            >
+              <p className="text-xl">{plato.name}</p>
 
-          <Transition show={consumoLength}>
-            <div className="transition duration-150 ease-in-out data-closed:opacity-0 data-enter:opacity-100">
+              <p className="text-xl font-bold">${plato.price}</p>
+            </button>
+          ))}
+        </div>
+
+        <div className="border-2 border-dashed rounded-md border-gray-300 px-5">
+
+          {consumoLength ? (
+            <>
               <h2 className="text-3xl font-bold text-center py-8">Consumo</h2>
               <div>
                 {consumoItems.map(item => (
-                  <TransitionChild unmount key={item.id}>
-                    <div className="flex items-end justify-between py-5 border-b border-gray-300 transition ease-in-out data-closed:duration-200  data-closed:translate-x-full data-leave:duration-200  data-leave:translate-x-full">
-                      <div>
-                        <p className="text-xl">{item.name} - ${item.price}</p>
-                        <p className="font-bold text-[18px]">Cantidad: {item.quantity} - ${item.quantity * item.price}</p>
-                      </div>
-                      <button
-                        className="size-8 rounded-full bg-red-500 font-bold text-white cursor-pointer"
-                        onClick={() => deleteItem(item.id)}
-                      >
-                        X
-                      </button>
+                  <div key={item.id} className="flex items-end justify-between py-5 border-b border-gray-300">
+                    <div>
+                      <p className="text-xl">{item.name} - ${item.price}</p>
+                      <p className="font-bold text-[18px]">Cantidad: {item.quantity} - ${item.quantity * item.price}</p>
                     </div>
-                  </TransitionChild>
+                    <button
+                      className="size-8 rounded-full bg-red-500 font-bold text-white cursor-pointer"
+                      onClick={() => deleteItem(item.id)}
+                    >
+                      X
+                    </button>
+                  </div>
                 ))}
               </div>
 
