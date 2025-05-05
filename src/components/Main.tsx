@@ -54,7 +54,7 @@ export default function Main() {
               <List>
                 <TransitionGroup>
                   {consumoItems.map(item => (
-                    <Collapse key={item.id}>
+                    <Collapse  key={item.id}>
                       <ListItem
                         secondaryAction={
                           <IconButton
@@ -107,7 +107,7 @@ export default function Main() {
               </div>
 
               <button
-                className="w-full text-center uppercase font-bold text-white bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-md p-4 text-xl mt-8 disabled:opacity-20 disabled:bg-neutral-800 disabled:cursor-auto"
+                className="w-full text-center uppercase font-bold text-white bg-neutral-800 hover:bg-neutral-700 cursor-pointer rounded-md p-4 text-xl mt-8 disabled:opacity-20 disabled:bg-neutral-800 disabled:cursor-auto transition"
                 onClick={saveOrden}
                 disabled={tip === 0}
               >
